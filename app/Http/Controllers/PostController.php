@@ -8,10 +8,19 @@ use Illuminate\Http\Request;
 class PostController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
-        $posts = Post::latest()->paginate(5);
-        
+        $search = $request->query('search');
+
+        $posts = Post::latest()
+            ->when($search, function ($query, $search) {
+                return $query->where('title', 'like', '%' . $search . '%')
+                             ->orWhere('content', 'like', '%' . $search . '%');
+            })
+            ->paginate(5);
+            
+        $posts->appends(['search' => $search]);
+
         return view('posts.index', compact('posts'));
     }
 
@@ -25,16 +34,18 @@ class PostController extends Controller
         $request->validate([
             'title' => 'required|min:5',
             'content' => 'required|min:10',
-        ], [
-            'title.required' => 'Judul artikel wajib diisi!',
-            'title.min' => 'Judul minimal 5 karakter!',
-            'content.required' => 'Isi artikel wajib diisi!',
-            'content.min' => 'Isi konten minimal 10 karakter!',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', 
         ]);
+
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('posts', 'public');
+        }
 
         Post::create([
             'title' => $request->title,
             'content' => $request->content,
+            'image' => $imagePath,
         ]);
 
         return redirect()->route('posts.index')->with('success', 'Hore! Artikel baru berhasil ditambahkan.');

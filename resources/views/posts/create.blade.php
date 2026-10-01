@@ -6,7 +6,7 @@
     <div class="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md border border-gray-200">
         <h1 class="text-2xl font-bold mb-6 text-blue-600">Tambah Artikel Baru</h1>
 
-        <form action="{{ route('posts.store') }}" method="POST">
+        <form action="{{ route('posts.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
 
             <div class="mb-4">
@@ -15,6 +15,14 @@
                     class="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 @error('title') border-red-500 focus:ring-red-500 @enderror">
                 
                 @error('title')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold mb-2">Upload Gambar (Opsional)</label>
+                <input type="file" name="image" class="w-full border p-2 rounded">
+                @error('image')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>

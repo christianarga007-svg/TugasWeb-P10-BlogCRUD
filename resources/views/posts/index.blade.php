@@ -16,9 +16,20 @@
         </x-alert>
     @endif
 
+    <form action="{{ route('posts.index') }}" method="GET" class="mb-6 flex shadow-sm">
+        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari judul atau isi artikel..." 
+            class="w-full border border-gray-300 p-2 rounded-l focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-r hover:bg-blue-700 font-bold">
+            Cari
+        </button>
+    </form>
+
     <div class="grid gap-4">
         @forelse($posts as $post)
             <x-card>
+                @if($post->image)
+                    <img src="{{ asset('storage/' . $post->image) }}" alt="Gambar Post" class="w-full max-h-72 object-contain rounded mb-4 border bg-gray-50">
+                @endif
                 <h2 class="text-xl font-bold">{{ $post->title }}</h2>
                 <p class="text-gray-600 mt-2">{{ Str::limit($post->content, 100) }}</p>
                 <div class="mt-4 flex space-x-2 text-sm">
